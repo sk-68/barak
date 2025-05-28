@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Data Kehadiran Semester 2 2024/2025</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="login" id="loginBox">
+  <img class="logo" src="img/Logo.jpg" alt="Logo" />
+  <h2>ILMU HUKUM SEMESTER 2</h2>
+
+  <div id="datetime"></div>
+  <div id="infoPertemuan" class="info-pertemuan"></div>
+  <div class="jadwal-hari-ini" id="jadwalHariIni">
+    <h3>Jadwal Kuliah Hari Ini</h3>
+    <div id="listMatkul"></div>
+  </div>
+
+  <input type="text" id="username" placeholder="Username" /><br /><br />
+  <input type="password" id="password" placeholder="Password" /><br /><br />
+  <button onclick="login()">Masuk</button>
+  <p id="loginError"></p>
+</div>
+
+<div class="absensi" id="absensiBox" style="display:none;">
+  <div id="greetingMessage" class="greeting"></div>
+  <div id="welcomeMessage" class="welcome-message"></div>
+  <div id="roleInfo" class="role-info"></div>
+  <div id="dosenInfo" class="dosen-info"></div>
+  <div id="datetimeAbsensi"></div>
+  <div id="infoPertemuanAbsensi" class="info-pertemuan"></div>
+  <h2>Data Absensi</h2>
+  <div id="tables"></div>
+  <button onclick="logout()">Logout</button>
+</div>
+
+<script src="js/script.js"></script>
+</body>
+</html>
