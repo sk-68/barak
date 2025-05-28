@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Data Kehadiran Semester 2 2024/2025</title>
+  <style>
+    body {
+      background-image: url('background.jpg');
+      background-size: cover;
+      font-family: Arial, sans-serif;
+      color: #000;
+      text-align: center;
+      margin: 0; padding: 0;
+    }
+    .login, .absensi {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      padding: 20px;
+      margin: 40px auto;
+      width: 90%;
+      max-width: 900px;
+      box-shadow: 0 0 10px #888;
+    }
+    img.logo {
+      max-width: 150px;
+      margin-bottom: 20px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 20px 0;
+      font-size: 14px;
+    }
+    caption {
+      font-weight: bold;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+    th, td {
+      border: 1px solid #333;
+      padding: 5px;
+      text-align: center;
+      user-select: none;
+    }
+    th:first-child, td:first-child {
+      text-align: left;
+      padding-left: 10px;
+    }
+    button {
+      padding: 8px 15px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 8px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      margin-top: 15px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #loginError {
+      color: red;
+      margin-top: 10px;
+      height: 20px;
+    }
+    #datetime {
+      font-size: 18px;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+    .jadwal-hari-ini {
+      margin: 20px 0;
+      padding: 15px;
+      background: rgba(0, 123, 255, 0.1);
+      border-radius: 10px;
+    }
+    .jadwal-hari-ini h3 {
+      margin-top: 0;
+    }
+    .matkul-item {
+      margin: 5px 0;
+      font-size: 16px;
+      padding: 8px;
+      border-radius: 5px;
+    }
+    .info-pertemuan {
+      padding: 10px;
+      border-radius: 8px;
+      margin: 10px 0;
+      font-weight: bold;
+      color: white;
+    }
+    .label-merah {
+      background-color: #dc3545;
+    }
+    .label-biru {
+      background-color: #007bff;
+    }
+    .label-hijau {
+      background-color: #28a745;
+    }
+    .sedang-berjalan {
+      background-color: #ffc107;
+      color: black;
+      font-weight: bold;
+    }
+    .jam-berjalan {
+      color: #dc3545;
+      font-weight: bold;
+    }
+    .welcome-message {
+      font-size: 20px;
+      margin-bottom: 15px;
+      color: #333;
+    }
+    .dosen-info {
+      font-style: italic;
+      margin-bottom: 15px;
+    }
+    .role-info {
+      font-weight: bold;
+      color: #28a745;
+      margin-bottom: 10px;
+    }
+    .greeting {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #000000;
+    }
+  
+.absensi-card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  margin: 10px;
+  width: 280px;
+  display: inline-block;
+  vertical-align: top;
+}
+canvas {
+  max-width: 100%;
+  margin-top: 10px;
+}
+.komentar {
+  font-style: italic;
+  color: #555;
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="login" id="loginBox">
+  <img class="logo" src="Logo.jpg" alt="Logo" />
+  <h2>ILMU HUKUM SEMESTER 2</h2>
+  
+  <div id="datetime"></div>
+  <div id="infoPertemuan" class="info-pertemuan"></div>
+  
+  <div class="jadwal-hari-ini" id="jadwalHariIni">
+    <h3>Jadwal Kuliah Hari Ini</h3>
+    <div id="listMatkul"></div>
+  </div>
+  
+  <input type="text" id="username" placeholder="Username" /><br /><br />
+  <input type="password" id="password" placeholder="Password" /><br /><br />
+  <button onclick="login()">Masuk</button>
+  <p id="loginError"></p>
+  
+  <!-- Informasi login dosen -->
+  <div style="margin-top: 20px; text-align: left; font-size: 14px; color: #555;">
+    <p><strong> </strong></p>
+    <ul style="list-style-type: none; padding-left: 10px;">
+      <li>  <strong> </strong>  <strong> </strong> </li>
+      <li>  <strong> </strong>  <strong> </strong> </li>
+      <li>  <strong> </strong>  <strong> </strong> </li>
+      <li>  <strong> </strong>  <strong> </strong> </li>
+      <li>  <strong> </strong>  <strong> </strong> </li>
+    </ul>
+  </div>
+</div>
+  
+<div class="absensi" id="absensiBox" style="display:none;">
+  <div id="greetingMessage" class="greeting"></div>
+  <div id="welcomeMessage" class="welcome-message"></div>
+  <div id="roleInfo" class="role-info"></div>
+  <div id="dosenInfo" class="dosen-info"></div>
+  <div id="datetimeAbsensi"></div>
+  <div id="infoPertemuanAbsensi" class="info-pertemuan"></div>
+  <h2>Data Absensi</h2>
+  <div id="tables"></div>
+  <button onclick="logout()">Logout</button>
+</div>
+
+<script>
+  // Data pengguna
+  const users = {
+    // User admin
+    admin: { password: 'admin1', role: 'admin', name: 'Administrator', title: '' },
+    
+    // User mahasiswa
+    david: { password: 'david', role: 'student', name: 'David', title: '' },
+    abdu: { password: 'abdu', role: 'student', name: 'Abdu', title: '' },
+    angga: { password: 'angga', role: 'student', name: 'Angga', title: '' },
+    
+    // User dosen
+    'pak agan': { 
+      password: '123', 
+      role: 'lecturer', 
+      name: 'Agan Sutanto',
+      title: 'S.H., M.H.',
+      matkul: 'Hukum Perdata',
+      greeting: 'Pak'
+    },
+    'bu elvina': { 
+      password: '123', 
+      role: 'lecturer', 
+      name: 'Elvina Melinda',
+      title: 'S.H., M.H.',
+      matkul: ['Hukum Pidana', 'Pendidikan Kewarganegaraan', 'Sosiologi dan Ilmu Budaya Dasar'],
+      greeting: 'Bu'
+    },
+    'pak arif': { 
+      password: '123', 
+      role: 'lecturer', 
+      name: 'Muarifudin',
+      title: 'S.E., M.M.',
+      matkul: 'Pendidikan Agama Islam',
+      greeting: 'Pak'
+    },
+    'bu dina': { 
+      password: '123', 
+      role: 'lecturer', 
+      name: 'Dina Ulaya Aziizah',
+      title: 'S.E., M.M.',
+      matkul: 'Bahasa Indonesia',
+      greeting: 'Bu'
+    },
+    'bu lia': { 
+      password: '123', 
+      role: 'lecturer', 
+      name: 'Kusroh Lailiyah',
+      title: 'S.H., M.H.',
+      matkul: 'Hukum Tata Negara',
+      greeting: 'Bu'
+    }
+  };
+
+  // Data dosen untuk setiap mata kuliah
+  const dosenMatkul = {
+    "Pendidikan Kewarganegaraan": "Elvina Melinda, S.H., M.H.",
+    "Pendidikan Agama Islam": "Muarifudin, S.E., M.M.",
+    "Hukum Pidana": "Elvina Melinda, S.H., M.H.",
+    "Sosiologi dan Ilmu Budaya Dasar": "Elvina Melinda, S.H., M.H.",
+    "Bahasa Indonesia": "Dina Ulaya Aziizah, S.E., M.M.",
+    "Hukum Perdata": "Agan Sutanto, S.H., M.H.",
+    "Hukum Tata Negara": "Kusroh Lailiyah, S.H., M.H."
+  };
+
+  // Fungsi untuk set waktu ke tengah malam
+  function setToMidnight(date) {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
+  // Kalender Akademik Semester 3 Ilmu Hukum 2025/2026
+  const pertemuanDates = [
+    setToMidnight(new Date('2025-03-17')), // Pertemuan 1
+    setToMidnight(new Date('2025-04-07')), // Pertemuan 2
+    setToMidnight(new Date('2025-04-14')),
+    setToMidnight(new Date('2025-04-21')),
+    setToMidnight(new Date('2025-04-28')),
+    setToMidnight(new Date('2025-05-05')),
+    setToMidnight(new Date('2025-05-12')),
+    setToMidnight(new Date('2025-05-19')),
+    setToMidnight(new Date('2025-06-02')),
+    setToMidnight(new Date('2025-06-09')),
+    setToMidnight(new Date('2025-06-16')),
+    setToMidnight(new Date('2025-06-23')),
+    setToMidnight(new Date('2025-06-30')),
+    setToMidnight(new Date('2025-07-07')),
+    setToMidnight(new Date('2025-07-14')),
+    setToMidnight(new Date('2025-07-21')), 
+    setToMidnight(new Date('2025-07-28')),
+    setToMidnight(new Date('2025-08-04')),
+  ];
+
+  const holidays = [
+    // Libur Idul Fitri 24 Maret - 6 April
+    ...Array.from({ length: 14 }, (_, i) => ({
+      date: setToMidnight(new Date(2025, 2, 24 + i)),
+      name: 'Libur Idul Fitri'
+    })),
+    { date: setToMidnight(new Date('2025-05-29')), name: 'Kenaikan Isa Almasih' },
+    { date: setToMidnight(new Date('2025-06-01')), name: 'Hari Lahir Pancasila' },
+    { date: setToMidnight(new Date('2025-06-06')), name: 'Hari Raya Idul Adha' },
+    { date: setToMidnight(new Date('2025-06-27')), name: 'Tahun Baru Islam' }
+  ];
+
+  const specialWeeks = {
+    8: {
+      startDate: setToMidnight(new Date('2025-05-22')),
+      endDate: setToMidnight(new Date('2025-05-28')),
+      name: 'Ujian Tengah Semester'
+    },
+    16: {
+      startDate: setToMidnight(new Date('2025-07-21')),
+      endDate: setToMidnight(new Date('2025-07-24')),
+      name: 'Ujian Akhir Semester'
+    }
+  };
+
+  // Jadwal mata kuliah berdasarkan hari (0=Minggu, 1=Senin, ..., 6=Sabtu) beserta jam
+  const jadwalKuliah = {
+    1: [ // Senin
+      { nama: "Pendidikan Kewarganegaraan", jam: "13:00 - 14:00" },
+      { nama: "Pendidikan Agama Islam", jam: "14:00 - 15:00" }
+    ],
+    2: [ // Selasa
+      { nama: "Hukum Pidana", jam: "13:00 - 14:00" },
+      { nama: "Sosiologi dan Ilmu Budaya Dasar", jam: "14:00 - 15:00" }
+    ],
+    3: [ // Rabu
+      { nama: "Bahasa Indonesia", jam: "08:00 - 10:00" },
+      { nama: "Hukum Perdata", jam: "10:00 - 12:00" }
+    ],
+    4: [ // Kamis
+      { nama: "Hukum Tata Negara", jam: "13:30 - 15:30" }
+    ],
+    5: [], // Jumat (tidak ada kelas)
+    6: [], // Sabtu (tidak ada kelas)
+    0: []  // Minggu (tidak ada kelas)
+  };
+
+  const semuaMataKuliah = [
+    "Pendidikan Kewarganegaraan",
+    "Pendidikan Agama Islam",
+    "Hukum Pidana",
+    "Sosiologi dan Ilmu Budaya Dasar",
+    "Bahasa Indonesia",
+    "Hukum Perdata",
+    "Hukum Tata Negara"
+  ];
+
+  const dataAbsensi = {
+    david: {
+      "Pendidikan Kewarganegaraan": { hadir: [1,2,3,4,5,6,7,8], tidakHadir: [] },
+      "Pendidikan Agama Islam": { hadir: [1,2,3,4,5,6,7,8], tidakHadir: [] },
+      "Hukum Pidana": { hadir: [1,2,3,4,5,6,7,8], tidakHadir: [] },
+      "Sosiologi dan Ilmu Budaya Dasar": { hadir: [1,2,3,4,5,6,7,8], tidakHadir: [] },
+      "Bahasa Indonesia": { hadir: [1,2,3,4,5,6,7,8], tidakHadir: [] },
+      "Hukum Perdata": { hadir: [1,2,3,4,5,6,7,8], tidakHadir: [] },
+      "Hukum Tata Negara": { hadir: [1,2,3,4,5,6,7,8], tidakHadir: [] }
+    },
+    angga: {
+      "Pendidikan Kewarganegaraan": { hadir: [1,2,3,5,7,8], tidakHadir: [4,6] },
+      "Pendidikan Agama Islam": { hadir: [2,3,4,6,8], tidakHadir: [1,5,7] },
+      "Hukum Pidana": { hadir: [1,2,3,4,5,6,7,8], tidakHadir: [] },
+      "Sosiologi dan Ilmu Budaya Dasar": { hadir: [1,2,4,5,6,7,8], tidakHadir: [3] },
+      "Bahasa Indonesia": { hadir: [1,2,3,4,6,7,8], tidakHadir: [5] },
+      "Hukum Perdata": { hadir: [2,3,4,5,6,7,8], tidakHadir: [1] },
+      "Hukum Tata Negara": { hadir: [1,2,3,4,5,6,7,8], tidakHadir: [] }
+    },
+    abdu: {
+      "Pendidikan Kewarganegaraan": { hadir: [1,2,3,5,7,8], tidakHadir: [4,6] },
+      "Pendidikan Agama Islam": { hadir: [2,4,5,6,7,8], tidakHadir: [1,3] },
+      "Hukum Pidana": { hadir: [1,2,3,4,5,6,7,8], tidakHadir: [] },
+      "Sosiologi dan Ilmu Budaya Dasar": { hadir: [1,2,3,4,5,6,7,8], tidakHadir: [] },
+      "Bahasa Indonesia": { hadir: [1,2,3,5,6,7,8], tidakHadir: [4] },
+      "Hukum Perdata": { hadir: [2,3,4,5,6,7,8], tidakHadir: [1] },
+      "Hukum Tata Negara": { hadir: [1,2,3,4,5,6,7,8], tidakHadir: [] }
+    }
+  };
+
+  // Fungsi untuk memeriksa apakah waktu saat ini berada dalam jam kuliah
+  function isWaktuKuliah(jamKuliah) {
+    const now = new Date();
+    const [startTime, endTime] = jamKuliah.split(' - ');
+    
+    const [startHour, startMinute] = startTime.split(':').map(Number);
+    const [endHour, endMinute] = endTime.split(':').map(Number);
+    
+    const startDate = new Date();
+    startDate.setHours(startHour, startMinute, 0, 0);
+    
+    const endDate = new Date();
+    endDate.setHours(endHour, endMinute, 0, 0);
+    
+    return now >= startDate && now <= endDate;
+  }
+
+  // Fungsi untuk memperbarui tanggal dan waktu
+  function updateDateTime() {
+    const now = new Date();
+    const hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    const namaHari = hari[now.getDay()];
+    const tanggal = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    const jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    
+    const dateTimeStr = `${namaHari}, ${tanggal} | ${jam}`;
+    document.getElementById('datetime').textContent = dateTimeStr;
+    
+    const pertemuanInfo = hitungPertemuan();
+    const infoPertemuanElement = document.getElementById('infoPertemuan');
+    infoPertemuanElement.textContent = pertemuanInfo.status;
+    
+    // Update warna label
+    infoPertemuanElement.className = 'info-pertemuan';
+    if (pertemuanInfo.labelColor) {
+      infoPertemuanElement.classList.add(`label-${pertemuanInfo.labelColor}`);
+    }
+    
+    if(document.getElementById('absensiBox').style.display !== 'none') {
+      document.getElementById('datetimeAbsensi').textContent = dateTimeStr;
+      const infoPertemuanAbsensiElement = document.getElementById('infoPertemuanAbsensi');
+      infoPertemuanAbsensiElement.textContent = pertemuanInfo.status;
+      
+      // Update warna label
+      infoPertemuanAbsensiElement.className = 'info-pertemuan';
+      if (pertemuanInfo.labelColor) {
+        infoPertemuanAbsensiElement.classList.add(`label-${pertemuanInfo.labelColor}`);
+      }
+    }
+    
+    return pertemuanInfo.pertemuan;
+  }
+
+  // Fungsi untuk menampilkan jadwal hari ini
+  function tampilkanJadwalHariIni() {
+    const hariIni = new Date().getDay();
+    const matkulHariIni = jadwalKuliah[hariIni];
+    const listMatkul = document.getElementById('listMatkul');
+    
+    listMatkul.innerHTML = '';
+    
+    if(matkulHariIni.length === 0) {
+      listMatkul.innerHTML = '<p>Tidak ada jadwal kuliah hari ini</p>';
+    } else {
+      matkulHariIni.forEach(matkul => {
+        const div = document.createElement('div');
+        div.className = 'matkul-item';
+        
+        const isBerjalan = isWaktuKuliah(matkul.jam);
+        
+        const jamParts = matkul.jam.split(' ');
+        const jamHTML = isBerjalan 
+          ? `<span class="jam-berjalan">${jamParts[0]}</span> ${jamParts[1]} <span class="jam-berjalan">${jamParts[2]}</span>`
+          : matkul.jam;
+        
+        div.innerHTML = `
+          <strong>${matkul.nama}</strong> (${jamHTML})<br>
+          <small>${dosenMatkul[matkul.nama]}</small>
+        `;
+        
+        if (isBerjalan) {
+          div.classList.add('sedang-berjalan');
+        }
+        
+        listMatkul.appendChild(div);
+      });
+    }
+  }
+
+  // Fungsi untuk menghitung pertemuan
+  function hitungPertemuan() {
+    const today = setToMidnight(new Date());
+
+    // Cek libur nasional dulu
+    const libur = holidays.find(h => h.date.getTime() === today.getTime());
+    if (libur) {
+      return {
+        pertemuan: null,
+        status: `Libur Nasional: ${libur.name}`,
+        labelColor: 'hijau'
+      };
+    }
+
+    // Cek apakah sebelum atau setelah masa kuliah
+    if (today < pertemuanDates[0]) {
+      return {
+        pertemuan: null,
+        status: `Belum masuk periode perkuliahan (Mulai ${pertemuanDates[0].toLocaleDateString()})`,
+        labelColor: 'merah'
+      };
+    }
+
+    if (today > pertemuanDates[pertemuanDates.length - 1]) {
+      return {
+        pertemuan: null,
+        status: `Perkuliahan telah berakhir (Sampai ${pertemuanDates[pertemuanDates.length - 1].toLocaleDateString()})`,
+        labelColor: 'merah'
+      };
+    }
+
+    // Cari minggu ke berapa hari ini termasuk
+    let mingguKe = null;
+    for (let i = pertemuanDates.length - 1; i >= 0; i--) {
+      if (today >= pertemuanDates[i]) {
+        mingguKe = i + 1;
+        break;
+      }
+    }
+
+    // Cek apakah minggu ini termasuk minggu khusus UTS/UAS
+    for (const [nomor, info] of Object.entries(specialWeeks)) {
+      if (today >= info.startDate && today <= info.endDate) {
+        return {
+          pertemuan: parseInt(nomor),
+          status: `${info.name} (Minggu ke-${nomor})`,
+          labelColor: 'biru'
+        };
+      }
+    }
+
+    // Jika minggu ke tidak ditemukan, berarti bukan hari pertemuan
+    if (mingguKe === null) {
+      return {
+        pertemuan: null,
+        status: "Bukan hari perkuliahan",
+        labelColor: 'merah'
+      };
+    }
+
+    // Hari ini termasuk minggu ke-n, tampilkan pertemuan ke-n
+    return {
+      pertemuan: mingguKe,
+      status: `Pertemuan ke-${mingguKe}`,
+      labelColor: 'merah'
+    };
+  }
+
+  // Fungsi Login
+  function login() {
+    const user = document.getElementById('username').value.trim();
+    const pass = document.getElementById('password').value.trim();
+    const loginError = document.getElementById('loginError');
+
+    if(users[user.toLowerCase()] && users[user.toLowerCase()].password === pass) {
+      loginError.textContent = '';
+      showAbsensi(user.toLowerCase());
+    } else {
+      loginError.textContent = 'Username atau password salah!';
+    }
+  }
+
+  function logout() {
+    document.getElementById('loginBox').style.display = 'block';
+    document.getElementById('absensiBox').style.display = 'none';
+    document.getElementById('username').value = '';
+    document.getElementById('password').value = '';
+  }
+
+  function showAbsensi(user) {
+    const currentWeek = updateDateTime();
+    document.getElementById('loginBox').style.display = 'none';
+    document.getElementById('absensiBox').style.display = 'block';
+
+    const container = document.getElementById('tables');
+    container.innerHTML = '';
+
+    const userData = users[user];
+    const userRole = userData.role;
+    const userName = userData.name;
+    const userTitle = userData.title || '';
+    const userGreeting = userData.greeting || '';
+
+    // Set welcome message based on role
+    document.getElementById('greetingMessage').textContent = `Selamat datang, ${userGreeting} ${userName} ${userTitle}`;
+    document.getElementById('welcomeMessage').style.display = 'none';
+    document.getElementById('roleInfo').textContent = `Anda login sebagai: ${userRole === 'admin' ? 'Administrator' : userRole === 'lecturer' ? 'Dosen' : 'Mahasiswa'}`;
+    
+    if (userRole === 'lecturer') {
+      document.getElementById('dosenInfo').textContent = `Mata kuliah yang diampu: ${Array.isArray(userData.matkul) ? userData.matkul.join(', ') : userData.matkul}`;
+    } else {
+      document.getElementById('dosenInfo').textContent = '';
+    }
+
+    if (userRole === 'admin') {
+      // Tampilan untuk admin - semua data
+      semuaMataKuliah.forEach(matkul => {
+        const table = document.createElement('table');
+        const caption = document.createElement('caption');
+        caption.textContent = `${matkul} (Pertemuan ke-${currentWeek})`;
+        table.appendChild(caption);
+
+        // Info dosen
+        const dosenRow = table.insertRow();
+        const dosenCell = dosenRow.insertCell();
+        dosenCell.colSpan = 17;
+        dosenCell.textContent = `Dosen: ${dosenMatkul[matkul]}`;
+        dosenCell.style.textAlign = 'left';
+        dosenCell.style.fontStyle = 'italic';
+
+        // Header tabel
+        const header = table.insertRow();
+        header.insertCell().textContent = 'Nama Mahasiswa';
+        for(let p=1; p<=16; p++){
+          header.insertCell().textContent = p;
+        }
+
+        Object.keys(dataAbsensi).forEach(nama => {
+          const row = table.insertRow();
+          row.insertCell().textContent = nama.charAt(0).toUpperCase() + nama.slice(1);
+
+          const hadirArr = dataAbsensi[nama][matkul]?.hadir || [];
+          const tidakHadirArr = dataAbsensi[nama][matkul]?.tidakHadir || [];
+
+          for(let p=1; p<=16; p++){
+            const cell = row.insertCell();
+            if(hadirArr.includes(p)){
+              cell.textContent = "✔️";
+            } else if(tidakHadirArr.includes(p)){
+              cell.textContent = "❌";
+            } else {
+              cell.textContent = "";
+            }
+          }
+        });
+
+        container.appendChild(table);
+      });
+    } else if (userRole === 'lecturer') {
+      // Tampilan untuk dosen - hanya matkul yang diampu
+      const matkulDosen = Array.isArray(userData.matkul) ? userData.matkul : [userData.matkul];
+      
+      matkulDosen.forEach(matkul => {
+        const table = document.createElement('table');
+        const caption = document.createElement('caption');
+        caption.textContent = `${matkul} (Pertemuan ke-${currentWeek})`;
+        table.appendChild(caption);
+
+        // Header tabel
+        const header = table.insertRow();
+        header.insertCell().textContent = 'Nama Mahasiswa';
+        for(let p=1; p<=16; p++){
+          header.insertCell().textContent = p;
+        }
+
+        Object.keys(dataAbsensi).forEach(nama => {
+          const row = table.insertRow();
+          row.insertCell().textContent = nama.charAt(0).toUpperCase() + nama.slice(1);
+
+          const hadirArr = dataAbsensi[nama][matkul]?.hadir || [];
+          const tidakHadirArr = dataAbsensi[nama][matkul]?.tidakHadir || [];
+
+          for(let p=1; p<=16; p++){
+            const cell = row.insertCell();
+            if(hadirArr.includes(p)){
+              cell.textContent = "✔️";
+            } else if(tidakHadirArr.includes(p)){
+              cell.textContent = "❌";
+            } else {
+              cell.textContent = "";
+            }
+          }
+        });
+
+        container.appendChild(table);
+      });
+    
+        } else {
+          // Tampilan untuk mahasiswa - hanya data dirinya sendiri
+          const komentarLucu = [
+            "Rajin banget kamu!",
+            "Semangat terus ya!",
+            "Kehadiranmu menyinari kelas ini!",
+            "Jangan telat terus ya!",
+            "Wah, hampir full hadir!"
+          ];
+
+          mataKuliahYangDitampilkan.forEach(matkul => {
+            const data = semuaDataKehadiran[matkul];
+            const mahasiswa = mahasiswaLogin;
+            const statusHadir = data[mahasiswa];
+            const totalPertemuan = statusHadir.length;
+            const jumlahHadir = statusHadir.filter(x => x).length;
+            const persen = Math.round((jumlahHadir / totalPertemuan) * 100);
+            const komentar = komentarLucu[Math.floor(Math.random() * komentarLucu.length)];
+
+            const card = document.createElement('div');
+            card.className = 'absensi-card';
+            card.innerHTML = `
+              <h3>${matkul}</h3>
+              <p>Persentase Kehadiran: ${persen}%</p>
+              <p class="komentar">${komentar}</p>
+              <canvas id="chart-${matkul}"></canvas>
+            `;
+            isiDashboard.appendChild(card);
+
+            new Chart(document.getElementById(`chart-${matkul}`), {
+              type: 'pie',
+              data: {
+                labels: ['Hadir', 'Tidak Hadir'],
+                datasets: [{
+                  data: [jumlahHadir, totalPertemuan - jumlahHadir],
+                  backgroundColor: ['#4caf50', '#f44336']
+                }]
+              },
+              options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom' } }
+              }
+            });
+          });
+        }
+
+
+      mataKuliahYangDitampilkan.forEach(matkul => {
+        const table = document.createElement('table');
+        const caption = document.createElement('caption');
+        caption.textContent = `${matkul} (Pertemuan ke-${currentWeek})`;
+        table.appendChild(caption);
+
+        // Info dosen
+        const dosenRow = table.insertRow();
+        const dosenCell = dosenRow.insertCell();
+        dosenCell.colSpan = 17;
+        dosenCell.textContent = `Dosen: ${dosenMatkul[matkul]}`;
+        dosenCell.style.textAlign = 'left';
+        dosenCell.style.fontStyle = 'italic';
+
+        // Header tabel
+        const header = table.insertRow();
+        header.insertCell().textContent = 'Pertemuan';
+        for(let p=1; p<=16; p++){
+          header.insertCell().textContent = p;
+        }
+
+        const row = table.insertRow();
+        row.insertCell().textContent = 'Kehadiran';
+
+        const hadirArr = dataAbsensi[user][matkul]?.hadir || [];
+        const tidakHadirArr = dataAbsensi[user][matkul]?.tidakHadir || [];
+
+        for(let p=1; p<=16; p++){
+          const cell = row.insertCell();
+          if(hadirArr.includes(p)){
+            cell.textContent = "✔️";
+          } else if(tidakHadirArr.includes(p)){
+            cell.textContent = "❌";
+          } else {
+            cell.textContent = "";
+          }
+        }
+
+        container.appendChild(table);
+      });
+    }
+  }
+
+  // Inisialisasi
+  setInterval(updateDateTime, 1000);
+  updateDateTime();
+  tampilkanJadwalHariIni();
+  setInterval(tampilkanJadwalHariIni, 60000);
+</script>
+
+</body>
+</html>
