@@ -1,0 +1,151 @@
+<!DOCTYPE html><html>
+<head>
+  <title>Router Login Multi-Step</title>
+  <style>
+    body {
+      background-color: #f4f4f4;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .router-box {
+      background-color: white;
+      padding: 20px;
+      border: 1px solid #aaa;
+      width: 300px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 5px;
+      margin: 5px 0 10px;
+    }
+    input[type="submit"] {
+      width: 100%;
+      padding: 6px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    input[type="submit"]:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body><!-- FiberHome --><div class="router-box" id="lobi1">
+  <h2>FiberHome Web Configuration</h2>
+  <p>IP Address: 192.168.1.1</p>
+  <form onsubmit="return loginLobi1()">
+    <label>Username:</label>
+    <input type="text" id="user1">
+    <label>Password:</label>
+    <input type="password" id="pass1">
+    <input type="submit" value="Login">
+  </form>
+</div><!-- ZTE F447v2 --><div class="router-box" id="lobi2" style="display:none;">
+  <h2>ZTE F447v2 Configuration</h2>
+  <p>IP Address: 192.168.1.1</p>
+  <form onsubmit="return loginLobi2()">
+    <label>Username:</label>
+    <input type="text" id="user2">
+    <label>Password:</label>
+    <input type="password" id="pass2">
+    <input type="submit" value="Login">
+  </form>
+</div><!-- Tenda N301 --><div class="router-box" id="lobi3" style="display:none;">
+  <h2>Tenda N301 Setup</h2>
+  <p>IP Address: 192.168.0.1</p>
+  <form onsubmit="return loginLobi3()">
+    <label>Username:</label>
+    <input type="text" id="user3">
+    <label>Password:</label>
+    <input type="password" id="pass3">
+    <input type="submit" value="Login">
+  </form>
+</div><!-- TP-Link TL-WR840N --><div class="router-box" id="lobi4" style="display:none;">
+  <h2>TP-Link TL-WR840N</h2>
+  <p>IP Address: 192.168.0.1</p>
+  <form onsubmit="return loginLobi4()">
+    <label>Username:</label>
+    <input type="text" id="user4">
+    <label>Password:</label>
+    <input type="password" id="pass4">
+    <input type="submit" value="Login">
+  </form>
+</div><!-- MikroTik --><div class="router-box" id="lobi5" style="display:none;">
+  <h2>MikroTik Winbox Access</h2>
+  <p>IP Address: 192.168.88.1</p>
+  <form onsubmit="return loginLobi5()">
+    <label>Username:</label>
+    <input type="text" id="user5">
+    <label>Password:</label>
+    <input type="password" id="pass5">
+    <input type="submit" value="Login">
+  </form>
+</div><script>
+function loginLobi1() {
+  const u = document.getElementById('user1').value;
+  const p = document.getElementById('pass1').value;
+  if (u === 'admin' && p === 'fiber123') {
+    document.getElementById('lobi1').style.display = 'none';
+    document.getElementById('lobi2').style.display = 'block';
+  } else {
+    alert('FiberHome: Access Denied');
+  }
+  return false;
+}
+
+function loginLobi2() {
+  const u = document.getElementById('user2').value;
+  const p = document.getElementById('pass2').value;
+  if (u === 'user' && p === 'zte123') {
+    document.getElementById('lobi2').style.display = 'none';
+    document.getElementById('lobi3').style.display = 'block';
+  } else {
+    alert('ZTE: Access Denied');
+  }
+  return false;
+}
+
+function loginLobi3() {
+  const u = document.getElementById('user3').value;
+  const p = document.getElementById('pass3').value;
+  if (u === 'admin' && p === 'tenda123') {
+    document.getElementById('lobi3').style.display = 'none';
+    document.getElementById('lobi4').style.display = 'block';
+  } else {
+    alert('Tenda: Access Denied');
+  }
+  return false;
+}
+
+function loginLobi4() {
+  const u = document.getElementById('user4').value;
+  const p = document.getElementById('pass4').value;
+  if (u === 'admin' && p === 'tplink123') {
+    document.getElementById('lobi4').style.display = 'none';
+    document.getElementById('lobi5').style.display = 'block';
+  } else {
+    alert('TP-Link: Access Denied');
+  }
+  return false;
+}
+
+function loginLobi5() {
+  const u = document.getElementById('user5').value;
+  const p = document.getElementById('pass5').value;
+  if (u === 'admin' && p === 'mikrotik123') {
+    alert('Login berhasil! Masuk ke halaman utama...');
+    // Bisa diganti redirect ke dashboard
+    // window.location.href = 'login.html';
+  } else {
+    alert('MikroTik: Access Denied');
+  }
+  return false;
+}
+</script></body>
+</html>
